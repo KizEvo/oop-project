@@ -5,7 +5,7 @@ BUILDDIR=build/
 PREREQUISITES=${INCDIR} ${BUILDDIR}
 
 CC=g++
-CPPFLAGS=-Wall -Wextra -g -O0 -I${INCDIR} -I.
+CPPFLAGS=-Wall -Wextra -std=c++14 -g -O0 -I${INCDIR} -I.
 
 SRCFILES=${wildcard ${SRCDIR}*.cpp}
 OBJFILES=${patsubst ${SRCDIR}%.cpp,${BUILDDIR}%.o, ${SRCFILES}}
