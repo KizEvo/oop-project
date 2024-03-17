@@ -1,8 +1,11 @@
-CC=g++
-CPPFLAGS=-Wall -Wextra -g -O0 -Iinc/ -I.
-
+INCDIR=inc/
 SRCDIR=src/
 BUILDDIR=build/
+
+PREREQUISITES=${INCDIR} ${BUILDDIR}
+
+CC=g++
+CPPFLAGS=-Wall -Wextra -g -O0 -I${INCDIR} -I.
 
 SRCFILES=${wildcard ${SRCDIR}*.cpp}
 OBJFILES=${patsubst ${SRCDIR}%.cpp,${BUILDDIR}%.o, ${SRCFILES}}
@@ -13,8 +16,11 @@ all: ${BUILDFILES}
 ${BUILDFILES}: ${OBJFILES}
 	${CC} ${CPPFLAGS} -o $@ $^
 
-${BUILDDIR}%.o: ${SRCDIR}%.cpp
+${BUILDDIR}%.o: ${SRCDIR}%.cpp | ${PREREQUISITES}
 	${CC} ${CPPFLAGS} -c -o $@ $^
+
+${PREREQUISITES}:
+	@mkdir $@
 
 run:
 	@./${BUILDFILES}
