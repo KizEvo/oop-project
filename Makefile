@@ -2,8 +2,6 @@ INCDIR=inc/
 SRCDIR=src/
 BUILDDIR=build/
 
-PREREQUISITES=${INCDIR} ${BUILDDIR}
-
 CC=g++
 CPPFLAGS=-Wall -Wextra -std=c++14 -g -O0 -I${INCDIR} -I.
 
@@ -16,10 +14,13 @@ all: ${BUILDFILES}
 ${BUILDFILES}: ${OBJFILES}
 	${CC} ${CPPFLAGS} -o $@ $^
 
-${BUILDDIR}%.o: ${SRCDIR}%.cpp | ${PREREQUISITES}
+${BUILDDIR}%.o: ${SRCDIR}%.cpp | ${BUILDDIR}
 	${CC} ${CPPFLAGS} -c -o $@ $^
 
-${PREREQUISITES}:
+${BUILDDIR}: | ${INCDIR}
+	@mkdir $@
+
+${INCDIR}: 
 	@mkdir $@
 
 run:
