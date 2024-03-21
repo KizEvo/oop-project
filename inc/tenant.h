@@ -1,21 +1,16 @@
 #ifndef TENANT_H
 #define TENANT_H
 
+#include <cstdint>
 #include "person.h"
-
-enum PAYMENT_METHOD {CASH, DEBIT_CARD, CREDIT_CARD};
+#include "apartment.h"
 
 class Tenant: public Person
 {
         private:
-                PAYMENT_METHOD paymentMethod;
-                Date startRent;
-                Date endRent;
-
-        public:
-                /*Constructor*/
-                Tenant();
-                Tenant(PAYMENT_METHOD, Date, Date);
+        	Apartment apartment;
+	public:
+		const uint16_t &getApartmentId();
 };
 
 #endif
