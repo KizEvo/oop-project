@@ -7,10 +7,15 @@
 
 class Tenant: public Person
 {
-        private:
-        	Apartment apartment;
+    private:
+       	Apartment apartment;
 	public:
-		const uint16_t &getApartmentId();
+		Tenant(Apartment&,std::string, std::string, Date, uint8_t);
+		std::string getTenantName();
+		uint8_t getTenantAge();
+		Date getTenantDateOfBirth();
+		std::string getTenantCCCD();
+		Apartment getApartmentInfo();
 };
 
 #endif

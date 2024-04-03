@@ -1,21 +1,23 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include <iostream>
+#include <cstdint>
+#include <string.h>
 #include "tenant.h"
 
-enum KIND_OF_TENANT {OWNER, CO_RENTER};
-class Manager: private Tenant
+class Manager: public Person
 {
     private:
-        uint16_t idRoom; 
-        KIND_OF_TENANT KOT;
+        std::string Password = "12345678";
     public:
-        /* Constructor */
-        Manager();
-        void getTenantInformation();        //get tenant information from console
-        void getMoneyTenant();              //get money from tenant
-        void delTenantInformation();        //delete tenant information from console
-        void searchTenantInformation();     //search tenant information by idRoom or cccd or name
+        uint16_t getApartmentID(Apartment&);
+        int16_t getPastDayAsDue(Apartment&);
+        Tenant writeTenantWhenApartmentIsEmpty(uint16_t&);              
+        Tenant writeTenantWhenApartmentIsOccupied(Apartment&);                  
+        Tenant extendApartmentEndRent(Tenant&,uint16_t);                  
+        void displayTenantInfo(Tenant);
+        void displayApartmentInfo(Apartment);            
 };
 
 #endif

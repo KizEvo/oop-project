@@ -10,7 +10,6 @@ class Person
 	protected:
 		std::string cccd;
 		Date birthday;
-
 	public:
 		std::string name;
 		uint8_t age;
