@@ -12,5 +12,6 @@
 
 - Nếu trên máy có Makefile (4.4.1) -> trên terminal chạy `make` để compile chương trình, sau đó chạy `make run`
 - Nếu trên máy không có Makefile, chạy các dòng sau trên terminal :
+	- `mkdir build`
 	- `g++ -Wall -Wextra -std=c++14 -g -O0 -Iinc/ -I. -o build/out.exe src/apartment.cpp src/main.cpp src/manager.cpp src/person.cpp src/tenant.cpp`
 	- `./build/out.exe` - Chạy chương trình đã compile
