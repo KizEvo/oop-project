@@ -20,6 +20,8 @@ class Apartment
 		Date endRent;					/*The date the apartment rent ends*/
 		PAYMENT_METHOD paymentMethod;	/*The tenant monthly payment method*/
 	public:
+		Apartment();
+		Apartment(uint16_t, std::string, uint8_t, int16_t, bool, Date, Date, PAYMENT_METHOD);
 		friend class Manager;
 };
 
