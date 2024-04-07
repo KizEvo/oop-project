@@ -1,0 +1,3 @@
+RoomID,MaxPerson,OwnerName,TenantName,CCCD,Birthday,Age,Rented,StartRent,EndRent,MaxDayPastDue,PaymentMETHOD
+101,4,Nguyen Van A,Nguyen Van A,12319831,11/12/2003,21,1,1/12/2023,1/10/2024,177,0
+101,4,Nguyen Van A,Nguyen Van B,1210491241,1/12/2001,23,1,1/12/2023,1/10/2024,177,0
