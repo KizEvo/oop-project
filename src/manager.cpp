@@ -1,8 +1,9 @@
 #include <ctime>
+#include <iomanip>
+#include <fstream>
 #include "manager.h"
 #include "person.h"
 #include "apartment.h"
-
 
 
 bool checkValidRoom(uint16_t idRoom);
@@ -183,15 +184,14 @@ Tenant Manager::writeTenantWhenApartmentIsEmpty(uint16_t &IdRoom) {
 
 
 void Manager::displayApartmentInfo(Apartment var) {
-    std::cout << "\nApartment Information" ;
-    std::cout << "\nApartment ID: " << var.id;
-    std::cout << "\nMax Person " << (int)var.maxPerson;
-    std::cout << "\nOwner Name " << var.ownerName;
-    std::cout << "\nStart Rent " << (int)var.startRent.day << " / " << (int)var.startRent.month << " / "  << (int)var.startRent.year;
-    std::cout << "\nEnd Rent " << (int)var.endRent.day << " / " << (int)var.endRent.month << " / "  << (int)var.endRent.year;
-    std::cout << "\nIs rented " << var.isRented;
-    std::cout << "\nMax Day Past Due " << var.maxDayPastDue;
-    std::cout << "\nPayment Method " << var.paymentMethod << std::endl;
+    std::cout << "\n\t------------        Apartment ID: " << var.id << "        ------------\n\n"
+    		  << "- Max Person: " << (int)var.maxPerson << std::setw(18) <<"- Owner Name: " << var.ownerName << "\n"
+    		  << "- Start Rent: " << (var.startRent.day<10 ? "0" : "") << (int)var.startRent.day << "/" << (var.startRent.month<10 ? "0" : "") << (int)var.startRent.month << "/"  << (int)var.startRent.year << std::setw(36)
+ 			  << "- End Rent: " << (var.endRent.day<10 ? "0" : "") << (int)var.endRent.day << "/" << (var.endRent.month<10 ? "0" : "") << (int)var.endRent.month << "/"  << (int)var.endRent.year << "\n"
+    		  << "- Is rented: " << var.isRented << std::setw(25) << "- Max Day Past Due: " << var.maxDayPastDue << std::setw(25) << "- Payment Method: " << var.paymentMethod << std::endl;
+    std::cout << "\n\t----------   Apartment "<< var.id <<"'s List of Tenants   ----------\n\n"
+    		  << std::setw(20) << "Name" << std::setw(10) << "Age" << std::setw(18) << "Birthday" << std::setw(20) << "CCCD" << "\n";
+
 }
 
 Tenant Manager::extendApartmentEndRent(Tenant& var, uint16_t extendedRentMonth) {
@@ -213,11 +213,10 @@ Tenant Manager::extendApartmentEndRent(Tenant& var, uint16_t extendedRentMonth) 
 
 void Manager::displayTenantInfo(Tenant var) {
     Date DoB = var.getTenantDateOfBirth();
-    std::cout << "\nTenant Personal Information";
-    std::cout << "\nName: " << var.getTenantName();
-    std::cout << "\nAge: " << (int)var.getTenantAge();
-    std::cout << "\nDate Of Birth: " << (int)DoB.day << " / " << (int)DoB.month << " / " << (int)DoB.year;
-    std::cout << "\nCCCD: " << var.getTenantCCCD();
+    std::cout << std::setw(20) << var.getTenantName()
+    		  << std::setw(10) << (int)var.getTenantAge()
+    		  << std::setw(10) << (DoB.day<10 ? "0" : "") << (int)DoB.day << "/" << (DoB.month<10 ? "0" : "") << (int)DoB.month << "/" << (DoB.year==0 ? "000" : "") << (int)DoB.year
+    		  << std::setw(20) << var.getTenantCCCD() << "\n";
     
 }
 Tenant Manager::writeTenantWhenApartmentIsOccupied(Apartment& Apart) {
@@ -248,6 +247,42 @@ Tenant Manager::writeTenantWhenApartmentIsOccupied(Apartment& Apart) {
     std::cout << "\nAge: " << (int)ageTemp;    
     return Tent;
 }
+void Manager::writeInfo(std::fstream &fout, Manager admin, Tenant p){
+	Date tempDate;
+	Apartment a = p.getApartmentInfo();
+	fout << admin.getApartmentID(a) << ","
+		 << (int)admin.getMaxPerson(a) << ","
+		 << admin.getOwnerName(a) << ","
+		 << p.getTenantName() << ","
+		 << p.getTenantCCCD() << ",";
+	tempDate = p.getTenantDateOfBirth();
+	fout << (int)tempDate.day << "/" << (int)tempDate.month << "/" << (int)tempDate.year << ","
+		 << (int)p.age << ","
+		 << 1 << ",";
+	tempDate = admin.getStartRent(a);
+	fout << (int)tempDate.day << "/" << (int)tempDate.month << "/" << (int)tempDate.year << ",";
+	tempDate = admin.getEndRent(a);
+	fout << (int)tempDate.day << "/" << (int)tempDate.month << "/" << (int)tempDate.year << ","
+		 << (int)admin.getPastDayAsDue(a) << ","
+		 << admin.getPaymentMethod(a)
+		 << "\n";
+}
+
+std::string Manager::getOwnerName(Apartment& var) {
+    return var.ownerName;    
+}
+uint8_t Manager::getMaxPerson(Apartment& var){
+    return var.maxPerson;
+}
+Date Manager::getStartRent(Apartment& var) {
+    return var.startRent;
+}
+Date Manager::getEndRent(Apartment& var) {
+    return var.endRent;
+}
+PAYMENT_METHOD Manager::getPaymentMethod(Apartment& var) {
+    return var.paymentMethod;
+}
 uint16_t Manager::getApartmentID(Apartment& var) {
     return var.id;
 }
@@ -255,3 +290,4 @@ uint16_t Manager::getApartmentID(Apartment& var) {
 int16_t Manager::getPastDayAsDue(Apartment& var)  {
     return var.maxDayPastDue;
 }
+

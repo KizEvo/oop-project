@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <fstream>
 #include <iomanip>
 #include <cstdint>
 #include <string>
@@ -25,8 +26,144 @@ void printAllRentedApartmentInfo(ApartmentMap,Manager);
 void printSingleApartmentInfo(tenantVector,Manager);
 void extendEndRentedDate(ApartmentMap&,Manager);
 void findIDRoom(ApartmentMap,Manager);
+
+void writeCSV(std::fstream&, std::string, Manager, ApartmentMap );
+int CountLine(std::fstream &fin, std::string fname);
+Date string2Date(std::string s);
+void readInfo(std::fstream &fin, uint16_t &key, Tenant &p);
+void readCSV(std::fstream &fin, std::string finName, ApartmentMap &m);
 void requestPassword();
 
+
+void writeCSV(std::fstream &fout, std::string foutName, Manager admin, ApartmentMap m){
+	fout.open(foutName, std::ios::out);
+	fout << "RoomID,MaxPerson,OwnerName,TenantName,CCCD,Birthday,Age,Rented,StartRent,EndRent,MaxDayPastDue,PaymentMETHOD\n";
+	tenantVector idRoom;
+	for(auto x : m){
+		idRoom = x.second;
+		for(int i=0; i<int(idRoom.size()); i++){
+			Tenant p = idRoom[i];
+			admin.writeInfo(fout, admin, p);
+		}
+	}
+	fout.close();
+	std::cout << "-> Saved in " << foutName << "!\n"; 
+}
+int CountLine(std::fstream &fin, std::string fname){
+	std::string line;
+	int count=0;
+	fin.open(fname, std::ios::in);
+	if(fin.is_open()) 
+	{
+		while(fin.peek()!=EOF)
+		{
+			getline(fin, line);
+			count++;
+		}
+		fin.close();
+		return count;
+	}
+	else{
+		std::cout << "<<<NOTIFICATION!>>>: Couldn't open the "<< fname <<" file!\n";
+		return 0;
+	}
+}
+
+
+Date string2Date(std::string s){
+	std::string d;
+	std::vector<std::string> date;
+	Date tempDay;
+	for(int i=0, j=0; i<int(s.size()); i++){
+		if(s.at(i) == '/'){
+			d = s.substr(j, i-j);
+			date.push_back(d);
+			j = i+1;					//Bo qua 1 ky tu '/'
+		}
+		if(i == int(s.size() - 1)){
+			d = s.substr(j, s.size() - j);
+			date.push_back(d);
+		}
+	}
+	tempDay.day = std::stoul(date[0]);	tempDay.month = std::stoul(date[1]); tempDay.year = std::stoul(date[2]);
+	return tempDay;
+}
+
+void readInfo(std::fstream &fin, uint16_t &key, Tenant &p){
+	std::string line, s;
+	getline(fin, line);
+//TACH DU LIEU
+	std::vector<std::string> data, date;
+	for(int i=0, j=0; i<int(line.size()); i++){
+		//Lay cac chuoi truoc dau phay, them vao vector data
+		if(line.at(i) == ','){
+			s = line.substr(j, i-j);	//line.substr(start, n) : bat dau tu [start] cua line, lay n ky tu
+			data.push_back(s);			//Dua vao data
+			j = i+1;					//Bo qua ky tu ','
+		}
+		//Lan lap cuoi cung -> lay chuoi sau dau phay cuoi cung
+		if(i == int(line.size() - 1)){
+			s = line.substr(j, line.size() - j);
+			data.push_back(s);
+		}
+	}
+//CHUYEN DOI KIEU DU LIEU
+	//data[0] -> ApartmentID (key of map)
+	key = std::stoul(data[0]);
+	//data[1] -> maxPerson (Apartment)
+	uint8_t tempMaxPerson = std::stoul(data[1]);
+	//data[2] -> ownerName (Apartment)
+	std::string tempOwnerName = data[2];
+	//data[3] -> name (Tenant)
+	std::string tempName = data[3];
+	//data[4] -> cccd (Tenant)
+	std::string tempCCCD = data[4];
+	//data[5] -> birthday (Tenant)
+	Date tempBirthday = string2Date(data[5]);
+	//data[6] -> age (Tenant)
+	uint8_t tempAge = std::stoul(data[6]);
+	//data[7] -> isRented (Apartment)
+	bool tempIsRented = true;
+	//data[8] -> startRent (Apartment)
+	Date tempStartRent = string2Date(data[8]);
+	//data[9] -> endRent (Apartment)
+	Date tempEndRent = string2Date(data[9]);
+	//data[10] -> MaxDayPastDue (Apartment)
+	int16_t tempMaxDayPastDue = std::stoi(data[10]);
+	//data[11] -> paymentMethod (Apartment)
+	PAYMENT_METHOD tempPMT;
+	unsigned int temp = stoul(data[11]);
+	switch(temp){
+		case 0: tempPMT = CASH; break;
+		case 1: tempPMT = DEBIT_CARD; break;
+		case 2: tempPMT = CREDIT_CARD; break;
+	}
+//GAN DU LIEU BANG CONSTRUCTOR
+	Apartment a(key, tempOwnerName, tempMaxPerson, tempMaxDayPastDue, tempIsRented, tempStartRent, tempEndRent, tempPMT);
+	Tenant tempTenant(a, tempName, tempCCCD, tempBirthday, tempAge);
+	p = tempTenant;
+}
+
+void readCSV(std::fstream &fin, std::string finName, ApartmentMap &m){
+	int n = CountLine(fin, finName);		//Tim so hang cua file .csv
+	if(n != 0){
+		std::cout << "<<<NOTIFICATION!>>>: Read " << finName << " successfully! (" << n-1 <<" lines of data detected)\n";
+		fin.open(finName, std::ios::in);
+		std::string line;
+		uint16_t key;
+		getline(fin, line);					//Loai bo di ten cot cua file CSV
+		Date emptyDate; emptyDate.day = 0; emptyDate.month = 0; emptyDate.year = 0;
+		for(int i=0; i<n-1; i++){
+			Apartment a;
+			Tenant p(a, "-", "-", emptyDate, 0);
+			readInfo(fin, key, p);
+			m[key].push_back(p);
+		}
+		fin.close();
+		return;
+	}
+	std::cout <<  "\t\t Please check if the file is exist or create a new one!\n";
+}
 
 void extendEndRentedDate(ApartmentMap& tenant, Manager admin) {
 	uint16_t id;
@@ -51,7 +188,7 @@ void extendEndRentedDate(ApartmentMap& tenant, Manager admin) {
 
 void findIDRoom(ApartmentMap tenant, Manager admin) {
 	uint16_t id;
-	do {std::cout << "\nEnter Apartment ID you need to extend end rented: " ;
+	do {std::cout << "\nEnter Apartment ID you need to find: " ;
         std::cin >> id;
         std::cin.ignore();
         if(!checkApartment(id)) std::cout << "\nApartment ID is not valid\n";
@@ -89,7 +226,7 @@ void requestPassword() {
 
 //print single room info
 void printSingleApartmentInfo(tenantVector idRoom, Manager admin) {
-	std::cout << "\n\n-------------------------\n" ;	
+	std::cout << "\n\n\t\t         -----------------------\n" ;	
 	admin.displayApartmentInfo(idRoom.begin()->getApartmentInfo());
 	for (auto i = idRoom.begin() ; i != idRoom.end() ; i++ ) {
 		admin.displayTenantInfo(*i);
@@ -99,7 +236,7 @@ void printSingleApartmentInfo(tenantVector idRoom, Manager admin) {
 
 //print Apartment Is Rented Infomation
 void printAllRentedApartmentInfo(ApartmentMap tenant, Manager admin) {
-	std::cout << "\n-----Print Rented Room Information-----\n";
+	std::cout << "\n---------------      Print Rented Room Information     ---------------\n";
 	for (int i = 1; i < 10; i++) {
 		for (int j = 1; j <= 10; j++) {
 			if (!tenant[i*100+j].empty()) {
@@ -107,7 +244,8 @@ void printAllRentedApartmentInfo(ApartmentMap tenant, Manager admin) {
 			}
 		}
 	}
-	std::cout << "\n\n--------------" <<std::endl;
+	std::cout << "\n\n-------------------------    End Of List!    -------------------------" <<std::endl;
+
 } 
 
 //create a map with key is id room and value is null vector
@@ -157,9 +295,9 @@ void tenantDeletionAutomatic(ApartmentMap& tenant, Manager admin) {
 			id.push_back(pair.first);	
 		}
 	}
-	std::cout << "\nDo you want to delete them? ";
-	std::cout << "\n1. Yes";
+	std::cout << "\n\n1. Yes";
 	std::cout << "\n2. No";
+	std::cout << "\nDo you want to delete them? ";
 	std::cin  >> SelectOption; std::cin.ignore();
 	if (SelectOption == 1) {
 		for (auto i = id.begin() ; i != id.end() ; i++ ) {
@@ -196,9 +334,18 @@ int main(void)
 	std::cout << "*****************************\n";
 	std::cout << "*" << std::setw(10) << " " << "Welcome"	<< std::setw(10) << " " << "*\n";
 	std::cout << "*****************************\n";
+
+	std::fstream fileout, filein;
+	std::string fname = "test.csv";				//Doi ten file tuy y
+	
 	requestPassword();
 	ApartmentMap member; 
 	Manager administrator;
+
+	
+	//DOC .CSV KHI VUA CHAY CHUONG TRINH
+	readCSV(filein, fname, member);
+
 	std::cout << "\n\n===== Welcome ======\n";
 	int SelectOption;
     do { 
@@ -209,10 +356,13 @@ int main(void)
         std::cout <<"4.Delete The Room\n";
         std::cout <<"5.Search The Room\n";
         std::cout <<"6.Print All Rented Apartment\n";
-        std::cout <<"Choose 1 option ( 0 to exit ): ";
+        std::cout <<"Choose 1 option ( 0 to save and exit ): ";
         std::cin >> SelectOption;  std::cin.ignore();
         switch (SelectOption)
         {
+		case 0:
+			writeCSV(fileout, fname, administrator, member);
+			break;
         case 1:
 			resetApartment(member);
             break;
@@ -234,6 +384,5 @@ int main(void)
         }
 		std::cout << "\n";
     }while(SelectOption != 0);
-	// std::cout << "Hello world" << std::endl;
 	return 0;
 }
