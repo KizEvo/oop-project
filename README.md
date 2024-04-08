@@ -10,8 +10,10 @@
 	* D:\AHocTap\HK2Nam3\OOP\oop-project>
 	* Đường dẫn có thể khác trên máy thầy nhưng terminal phải ở trong danh mục oop-project.
 
-- Nếu trên máy có Makefile (4.4.1) -> trên terminal chạy `make` để compile chương trình, sau đó chạy `make run`
-- Nếu trên máy không có Makefile, chạy các dòng sau trên terminal :
+- Trường hợp **máy có Makefile** (4.4.1) -> trên terminal chạy `make` để compile chương trình, sau đó chạy `make run`
+- Trường hợp **máy không có Makefile**, chạy các dòng sau trên terminal :
 	- `mkdir build`
 	- `g++ -Wall -Wextra -std=c++14 -g -O0 -Iinc/ -I. -o build/out.exe src/apartment.cpp src/main.cpp src/manager.cpp src/person.cpp src/tenant.cpp`
 	- `./build/out.exe` - Chạy chương trình đã compile
+
+- _**Lưu ý:**_ Chương trình được bảo mật một lớp, nên mỗi khi khởi chạy chương trình, cửa sổ Terminal sẽ yêu cầu cung cấp mật khẩu khi sử dụng. Thầy vui lòng nhập _Password_ sau : **12345678**
