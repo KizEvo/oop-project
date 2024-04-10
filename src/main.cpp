@@ -25,10 +25,9 @@ void printSingleApartmentInfo(tenantVector,Manager);
 void extendEndRentedDate(ApartmentMap&,Manager);
 void findIDRoom(ApartmentMap,Manager);
 void modifyTenantInfo(ApartmentMap&,Manager);
-void clearScreen();
 
 void writeCSV(std::fstream&, std::string, Manager, ApartmentMap );
-int CountLine(std::fstream &fin, std::string fname);
+int  CountLine(std::fstream &fin, std::string fname);
 Date string2Date(std::string s);
 void readInfo(std::fstream &fin, uint16_t &key, Tenant &p);
 void readCSV(std::fstream &fin, std::string finName, ApartmentMap &m);
@@ -329,7 +328,7 @@ void modifyTenantInfo(ApartmentMap& tenant, Manager admin) {
 		std::cout << "\n\tThe tenant matches the name you want to modify\n\n";
 		std::cout << std::setw(10) << "idRoom" << std::setw(20) << "Name" << std::setw(10) << "Age" << std::setw(18) << "Birthday" << std::setw(20) << "CCCD" <<  "\n";
 		for (auto i = temp.begin(); i != temp.end(); i++) {
-			std::cout << count;
+			std::cout << count++;
 			Apartment ApartmentInfo = i->getApartmentInfo();
 			std::cout << std::setw(9) << admin.getApartmentID(ApartmentInfo);
 			admin.displayTenantInfo(*i);
@@ -341,7 +340,7 @@ void modifyTenantInfo(ApartmentMap& tenant, Manager admin) {
 			Apartment apart_info = temp.at(number-1).getApartmentInfo();
 			Tenant Tenant_modify = admin.writeTenantWhenApartmentIsOccupied(apart_info);
 			tenant.at(admin.getApartmentID(apart_info)).at(index.at(number-1)) = Tenant_modify;
-			std::cout << "\nMdification is complete! \n";
+			std::cout << "\nModification is complete! \n";
 		} else {
 			std::cout << "\nWrong order number\n";
 		}
