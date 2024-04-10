@@ -11,8 +11,6 @@
 
 using RoomId = uint16_t;
 
-const std::string Password = "12345678";
-
 typedef std::vector<Tenant> 	tenantVector;
 typedef std::unordered_map<RoomId,tenantVector> 	ApartmentMap; 
 
@@ -26,13 +24,14 @@ void printAllRentedApartmentInfo(ApartmentMap,Manager);
 void printSingleApartmentInfo(tenantVector,Manager);
 void extendEndRentedDate(ApartmentMap&,Manager);
 void findIDRoom(ApartmentMap,Manager);
+void modifyTenantInfo(ApartmentMap&,Manager);
+void clearScreen();
 
 void writeCSV(std::fstream&, std::string, Manager, ApartmentMap );
 int CountLine(std::fstream &fin, std::string fname);
 Date string2Date(std::string s);
 void readInfo(std::fstream &fin, uint16_t &key, Tenant &p);
 void readCSV(std::fstream &fin, std::string finName, ApartmentMap &m);
-void requestPassword();
 
 
 void writeCSV(std::fstream &fout, std::string foutName, Manager admin, ApartmentMap m){
@@ -209,19 +208,7 @@ bool checkApartment(uint16_t idRoom) {
 }
 
 
-void requestPassword() {
-	std::string Password_Input;
-	do {
-		std::cout << "Enter Password: ";
-		std::cin >> Password_Input; std::cin.ignore();
-		if (!Password_Input.compare(Password)) {
-			std::cout << "\nWelcome Manager\n";
-		}
-		else {
-			std::cout << "\nPassword is wrong. Please try again! \n";
-		}
-	} while(Password_Input.compare(Password));
-}
+
 
 
 //print single room info
@@ -250,10 +237,21 @@ void printAllRentedApartmentInfo(ApartmentMap tenant, Manager admin) {
 
 //create a map with key is id room and value is null vector
 void resetApartment(ApartmentMap& tenant) {
-	for (int i = 1; i < 10; i++) {
-	for (int j = 1; j <= 10; j++) {
+	std::cout << "\n\n--------------------   Warning!    ---------------------\n";
+	std::cout << "Are you sure to delete all apartment information?\nYou can't undo this action\n";
+	std::cout << "  0.No\n";
+	std::cout << "  1.Yes\n";
+	std::cout << "Please enter your answer: ";
+	int16_t ans;
+	std::cin >> ans;
+	std::cin.ignore();
+	if (ans == 1) {
+		for (int i = 1; i < 10; i++) {
+			for (int j = 1; j <= 10; j++) {
 			tenant[i*100+j] = tenantVector();
+			}
 		}
+		std::cout << "\n\nDelete Succesfully \n";
 	}
 }
 
@@ -305,6 +303,52 @@ void tenantDeletionAutomatic(ApartmentMap& tenant, Manager admin) {
 		}
 	}
 }
+void modifyTenantInfo(ApartmentMap& tenant, Manager admin) {
+	std::cout << "\nEnter name the tenant you want to modify: ";
+	std::string Tenant_Name;
+	std::getline(std::cin,Tenant_Name);
+	tenantVector temp;
+	std::vector<uint8_t> index; //contain index of tenant has name need to modify in tenant vector 
+	uint16_t count = 1;
+	for (int i = 1; i < 10; i++) {
+		for (int j = 1; j <= 10; j++) {
+			if (!tenant[i*100+j].empty()) {
+				tenantVector idRoom = tenant[i*100+j];
+				for (auto i = idRoom.begin(); i != idRoom.end(); i++) {
+					if (!Tenant_Name.compare(i->getTenantName())) {
+						temp.push_back(*i);
+						index.push_back(i - idRoom.begin());
+					}
+				}
+			}
+		}
+	}
+	if (temp.empty()) {
+		std::cout << "\nThe name you were looking for could not be found\n";
+	} else {
+		std::cout << "\n\tThe tenant matches the name you want to modify\n\n";
+		std::cout << std::setw(10) << "idRoom" << std::setw(20) << "Name" << std::setw(10) << "Age" << std::setw(18) << "Birthday" << std::setw(20) << "CCCD" <<  "\n";
+		for (auto i = temp.begin(); i != temp.end(); i++) {
+			std::cout << count;
+			Apartment ApartmentInfo = i->getApartmentInfo();
+			std::cout << std::setw(9) << admin.getApartmentID(ApartmentInfo);
+			admin.displayTenantInfo(*i);
+		}		
+		std::cout << "\nChoose tenant you need to modify based on order number: ";
+		uint16_t number;
+		std::cin >> number; std::cin.ignore();
+		if (number <= temp.size() && number > 0) {
+			Apartment apart_info = temp.at(number-1).getApartmentInfo();
+			Tenant Tenant_modify = admin.writeTenantWhenApartmentIsOccupied(apart_info);
+			tenant.at(admin.getApartmentID(apart_info)).at(index.at(number-1)) = Tenant_modify;
+			std::cout << "\nMdification is complete! \n";
+		} else {
+			std::cout << "\nWrong order number\n";
+		}
+	}
+}
+
+
 //assign idroom into a key and tenant information into value
 void tenantRegistation(ApartmentMap& tenant, Manager admin) {
 	uint16_t idCheck;
@@ -329,6 +373,7 @@ void tenantRegistation(ApartmentMap& tenant, Manager admin) {
 	}
 }
 
+
 int main(void)
 {
 	std::cout << "*****************************\n";
@@ -338,9 +383,10 @@ int main(void)
 	std::fstream fileout, filein;
 	std::string fname = "test.csv";				//Doi ten file tuy y
 	
-	requestPassword();
 	ApartmentMap member; 
 	Manager administrator;
+
+	administrator.requestPassword();
 
 	
 	//DOC .CSV KHI VUA CHAY CHUONG TRINH
@@ -355,7 +401,8 @@ int main(void)
 		std::cout <<"3.Extended Apartment End Rented Date \n";
         std::cout <<"4.Delete The Room\n";
         std::cout <<"5.Search The Room\n";
-        std::cout <<"6.Print All Rented Apartment\n";
+        std::cout <<"6.Modify Tenant Information\n";
+		std::cout <<"7.Print All Rented Apartment\n";
         std::cout <<"Choose 1 option ( 0 to save and exit ): ";
         std::cin >> SelectOption;  std::cin.ignore();
         switch (SelectOption)
@@ -378,7 +425,10 @@ int main(void)
         case 5:
 			findIDRoom(member,administrator);
             break;
-        case 6:
+		case 6:
+			modifyTenantInfo(member,administrator);
+			break;
+        case 7:
             printAllRentedApartmentInfo(member,administrator);
             break;
         }

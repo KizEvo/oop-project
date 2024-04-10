@@ -12,6 +12,8 @@ int16_t Sub2Date(Date Date1, Date Date2);
 bool Compare2Date(Date Date1, Date Date2);
 
 
+std::string Manager::Password = "12345678";
+
 bool Compare2Date(Date Date1, Date Date2) { //return true if Date2 is equal or larger than Date1
     if (Date2.year > Date1.year) return true;
     else if (Date2.year == Date1.year && Date2.month > Date1.month) return true;
@@ -209,6 +211,19 @@ Tenant Manager::extendApartmentEndRent(Tenant& var, uint16_t extendedRentMonth) 
     Apart.maxDayPastDue = Sub2Date(CurrentDate,Apart.endRent);
     Tenant var_new(Apart,var.getTenantName(), var.getTenantCCCD(), var.getTenantDateOfBirth(), var.getTenantAge());
     return var_new;
+}
+void Manager::requestPassword() {
+	std::string Password_Input;
+	do {
+		std::cout << "Enter Password: ";
+		std::cin >> Password_Input; std::cin.ignore();
+		if (!Password_Input.compare(Password)) {
+			std::cout << "\nWelcome Manager\n";
+		}
+		else {
+			std::cout << "\nPassword is wrong. Please try again! \n";
+		}
+	} while(Password_Input.compare(Password));
 }
 
 void Manager::displayTenantInfo(Tenant var) {

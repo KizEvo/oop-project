@@ -9,7 +9,7 @@
 class Manager: public Person
 {
     private:
-        std::string Password = "12345678";
+        static std::string Password;
     public:
         uint16_t getApartmentID(Apartment&);
         int16_t getPastDayAsDue(Apartment&);
@@ -18,7 +18,7 @@ class Manager: public Person
         Date getStartRent(Apartment&);
         Date getEndRent(Apartment&);
         PAYMENT_METHOD getPaymentMethod(Apartment&);
-
+        void requestPassword(); 
         void writeInfo(std::fstream &fout, Manager admin, Tenant p);
         Tenant writeTenantWhenApartmentIsEmpty(uint16_t&);              
         Tenant writeTenantWhenApartmentIsOccupied(Apartment&);                  
