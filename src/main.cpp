@@ -269,6 +269,8 @@ void selectDeletion(ApartmentMap& tenant,Manager admin) {
         case 2:
 			tenantDeletionAutomatic(tenant,admin);
             break;
+		default:
+			std::cout << "\nInvalid Input\n";
         }
 }
 void tenantDeletionManual(ApartmentMap& tenant) {
@@ -278,28 +280,41 @@ void tenantDeletionManual(ApartmentMap& tenant) {
         std::cin.ignore();
         if(!checkApartment(id)) std::cout << "\nidRoom is not valid\n";
     } while(!checkApartment(id));
-	tenant[id].clear();
-	std::cout << "\nDelete Succesfully \n";
+	if (!tenant[id].empty()) {
+		tenant[id].clear();
+		std::cout << "\nDelete Succesfully \n";
+	} else {
+		std::cout << "\n This apartment has no tenants yet \n";
+	}
 }
 void tenantDeletionAutomatic(ApartmentMap& tenant, Manager admin) {
-	std::cout << "\n The apartments did not pay for 1 month \n";
 	int SelectOption;
 	std::vector<uint16_t> id;
-	for ( std::pair<RoomId,tenantVector> pair: tenant) {
-		Apartment ApartmentInfo = pair.second.at(0).getApartmentInfo();
-		if (admin.getPastDayAsDue(ApartmentInfo) < -15)  {
-			admin.displayApartmentInfo(pair.second.begin()->getApartmentInfo());
-			id.push_back(pair.first);	
+	for ( auto i = tenant.begin(); i != tenant.end(); i++) {
+		if (!i->second.empty()) {
+			Apartment ApartmentInfo = i->second.at(0).getApartmentInfo();
+			if (admin.getPastDayAsDue(ApartmentInfo) < -15)  {
+				printSingleApartmentInfo(i->second,admin);
+				id.push_back(i->first);	
+			}
 		}
 	}
-	std::cout << "\n\n1. Yes";
-	std::cout << "\n2. No";
+	if ( !id.empty()) {
+	std::cout << "\nThere are apartments did not pay for over 15 days \n";
 	std::cout << "\nDo you want to delete them? ";
+	std::cout << "\n1. Yes";
+	std::cout << "\n2. No";
+	std::cout << "\nYour option is: ";
 	std::cin  >> SelectOption; std::cin.ignore();
 	if (SelectOption == 1) {
 		for (auto i = id.begin() ; i != id.end() ; i++ ) {
 			tenant[*i].clear();
 		}
+		std::cout << "\nDelete Succesfully\n";
+	}
+	}
+	else {
+		std::cout << "\nThere are no apartments late payment deadlines!\n\n";
 	}
 }
 void modifyTenantInfo(ApartmentMap& tenant, Manager admin) {

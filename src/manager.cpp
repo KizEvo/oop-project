@@ -118,14 +118,8 @@ Tenant Manager::writeTenantWhenApartmentIsEmpty(uint16_t &IdRoom) {
     time_t now_time = time(0);
     struct tm *today = localtime(&now_time);
     uint8_t ageTemp = today->tm_year + 1900 - tempbirthday.year;
-    int OwnerOption;
-    do {std::cout << "Is tenant the owner of this apartment?\n 0.No\n 1.Yes\nEnter Answer (0 or 1): ";
-        std::cin >> OwnerOption; std::cin.ignore();
-    }while (OwnerOption != 1 && OwnerOption != 0);
-    if (OwnerOption == 1) {
-        temp.ownerName = nameTemp;
-    }
-    else temp.ownerName = "Not Owner";
+
+    temp.ownerName = nameTemp;
     temp.isRented = true;
     temp.maxPerson = 4;
     int dayRent, monthRent, yearRent;
