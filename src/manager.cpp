@@ -14,7 +14,7 @@ bool Compare2Date(Date Date1, Date Date2);
 
 std::string Manager::Password = "12345678";
 
-bool Compare2Date(Date Date1, Date Date2) { //return true if Date2 is equal or larger than Date1
+bool Compare2Date(Date Date1, Date Date2) { 
     if (Date2.year > Date1.year) return true;
     else if (Date2.year == Date1.year && Date2.month > Date1.month) return true;
     else if (Date2.year == Date1.year && Date2.month == Date1.month && Date2.day > Date1.day) return true;
@@ -194,7 +194,7 @@ Tenant Manager::extendApartmentEndRent(Tenant& var, uint16_t extendedRentMonth) 
     int dayofmonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31}; 
     Apartment Apart = var.getApartmentInfo();
     Apart.endRent.year  =  Apart.endRent.year + ( ((Apart.endRent.month + extendedRentMonth) > 12) ? (Apart.endRent.month + extendedRentMonth) / 12 : 0);
-    Apart.endRent.month = ((Apart.endRent.month + extendedRentMonth) > 12) ? ((Apart.endRent.month + extendedRentMonth) - 12) : (Apart.endRent.month + extendedRentMonth) ; 
+    Apart.endRent.month = ((Apart.endRent.month + extendedRentMonth) > 12) ? (((Apart.endRent.month + extendedRentMonth) % 12) + (((Apart.endRent.month + extendedRentMonth) % 12 == 0) ? 12 : 0) )  : (Apart.endRent.month + extendedRentMonth) ; 
     Apart.endRent.day =  Apart.endRent.day > dayofmonth[Apart.endRent.month-1] ? dayofmonth[Apart.endRent.month-1] : Apart.endRent.day;
     time_t now_time = time(0);
     struct tm *today = localtime(&now_time);
