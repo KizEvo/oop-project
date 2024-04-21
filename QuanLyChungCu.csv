@@ -1,0 +1,7 @@
+RoomID,MaxPerson,OwnerName,TenantName,CCCD,Birthday,Age,Rented,StartRent,EndRent,MaxDayPastDue,PaymentMETHOD
+202,4,Le Ngoc Long,Le Ngoc Long,81042901041,9/1/2001,23,1,9/2/2024,9/5/2024,27,0
+201,4,Nguyen Tri Long,Nguyen Tri Long,209337917401,4/5/1995,29,1,1/3/2023,1/9/2023,-224,0
+105,4,Nguyen Van C,Nguyen Van C,138194108912,1/12/2005,19,1,1/1/2024,1/7/2024,80,0
+305,4,Nguyen Dang Duy Manh,Nguyen Dang Duy,980140919041,1/12/2003,21,1,2/2/2024,2/6/2024,51,0
+101,4,Nguyen Van A,Nguyen Van A,8015801347311,1/9/2001,23,1,1/4/2024,1/7/2024,80,0
+101,4,Nguyen Van A,Nguyen Van B,130912041089,12/2/2002,22,1,1/4/2024,1/7/2024,80,0
