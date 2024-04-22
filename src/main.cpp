@@ -307,11 +307,11 @@ void tenantDeletionAutomatic(ApartmentMap& tenant, Manager admin) {
 	std::cout << "\nYour option is: ";
 	std::cin  >> SelectOption; std::cin.ignore();
 	if (SelectOption == 1) {
-		for (auto i = id.begin() ; i != id.end() ; i++ ) {
-			tenant[*i].clear();
+			for (auto i = id.begin() ; i != id.end() ; i++ ) {
+				tenant[*i].clear();
+			}
+			std::cout << "\nDelete Succesfully\n";
 		}
-		std::cout << "\nDelete Succesfully\n";
-	}
 	}
 	else {
 		std::cout << "\nThere are no apartments late payment deadlines!\n\n";
@@ -395,7 +395,7 @@ int main(void)
 	std::cout << "*****************************\n";
 
 	std::fstream fileout, filein;
-	std::string fname = "test.csv";				//Doi ten file tuy y
+	std::string fname = "QuanLyChungCu.csv";				//Doi ten file tuy y
 	
 	ApartmentMap member; 
 	Manager administrator;
